@@ -64,17 +64,17 @@ export default function Home() {
 
       {/* Experience Section */}
       <section id="experience" className="container">
-        <div className="section-header animate-on-scroll">
+        <header className="section-header animate-on-scroll">
           <h2 className="section-title">Experience</h2>
           <p className="section-subtitle">My professional journey building robust backend systems.</p>
-        </div>
+        </header>
 
         <div className="experience-list">
           {[...experienceData.experience].sort((a, b) => (b.order ?? 0) - (a.order ?? 0)).map((exp, index) => (
-            <div key={index} className="experience-card card animate-on-scroll" style={{ transitionDelay: `${index * 100}ms` }}>
+            <article key={index} className="experience-card card animate-on-scroll" style={{ transitionDelay: `${index * 100}ms` }}>
               <div className="exp-visual-accent"></div>
               <div className="exp-content">
-                <div className="exp-header">
+                <header className="exp-header">
                   <div className="exp-info">
                     <h3 className="exp-role">{exp.role}</h3>
                     <div className="exp-company-row">
@@ -90,7 +90,7 @@ export default function Home() {
                     </span>
                     <span className="exp-location"><i className="ri-map-pin-line"></i> {exp.location}</span>
                   </div>
-                </div>
+                </header>
                 <p className="exp-description">{exp.description}</p>
                 <div className="exp-tags">
                   {exp.tech_stack_names.map((tech, tIndex) => (
@@ -98,7 +98,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>

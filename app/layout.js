@@ -27,16 +27,16 @@ export const metadata = {
     description: "Portfolio of Hariharan S (AIGAMER) - Member of Technical Staff at Zoho Corp.",
     url: 'https://aigamer.dev',
     siteName: 'AIGAMER Portfolio',
-    images: [{ url: 'https://miro.medium.com/fit/c/680/680/1*BfWHdedqBhDbrqwrj4hkUg.png' }],
+    images: [{ url: '/favicon.ico' }],
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: "Hariharan S | Backend Engineer & AI Enthusiast",
     description: "Portfolio of Hariharan S (AIGAMER) - Member of Technical Staff at Zoho Corp.",
     creator: '@AIGAMER2800',
-    images: ['https://miro.medium.com/fit/c/680/680/1*BfWHdedqBhDbrqwrj4hkUg.png'],
+    images: ['/favicon.ico'],
   },
   verification: {
     google: 'BLCBxcfjPy-aTrfDc5Sm9Yi5SxOtWqu9ZReIp_JhG5Q',
@@ -63,16 +63,39 @@ export default function RootLayout({ children }) {
     },
     {
       "@context": "https://schema.org",
-      "@type": "EmployerAggregateRating",
-      "itemReviewed": {
-        "@type": "Organization",
-        "name": "Hariharan S",
-        "url": "https://aigamer.dev"
-      },
-      "ratingValue": "98",
-      "bestRating": "100",
-      "worstRating": "1",
-      "ratingCount": "50287"
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://aigamer.dev"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Projects",
+          "item": "https://aigamer.dev/projects"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Updates",
+          "item": "https://aigamer.dev/updates"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Awards",
+          "item": "https://aigamer.dev/awards"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SiteNavigationElement",
+      "name": ["Home", "Projects", "Updates", "Awards", "Contact"],
+      "url": ["https://aigamer.dev", "https://aigamer.dev/projects", "https://aigamer.dev/updates", "https://aigamer.dev/awards", "https://aigamer.dev/contact"]
     }
   ];
 
