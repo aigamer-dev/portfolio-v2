@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "fetch-data": "node scripts/fetch-cdn-data.js",
-    "build": "npm run fetch-data && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
