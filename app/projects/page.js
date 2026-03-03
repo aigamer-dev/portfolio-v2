@@ -16,6 +16,11 @@ export default function Projects() {
             <div className="projects-grid">
                 {[...projectsData.projects].sort((a, b) => (b.order ?? 0) - (a.order ?? 0)).map((project, index) => (
                     <div key={index} id={project.slug} className="project-card card animate-on-scroll">
+                        {project.cover_image && (
+                            <div className="project-image-container">
+                                <img src={project.cover_image} alt={`${project.title} screenshot`} className="project-image" />
+                            </div>
+                        )}
                         <div className="project-content">
                             <h3 className="project-title">{project.title}</h3>
                             <p className="project-description">{project.description}</p>

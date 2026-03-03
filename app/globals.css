@@ -291,19 +291,46 @@ section {
 
 .project-card {
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
   background-color: var(--surface-color);
   border: var(--border-width) solid var(--border-color);
-  padding: 1.5rem;
   border-radius: var(--radius-md);
   transition: var(--transition);
+  overflow: hidden;
+}
+
+.project-image-container {
+  position: relative;
+  background-color: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5%; 
+  border-right: var(--border-width) solid var(--border-color);
+}
+
+.project-image {
+  max-width: 80%;
+  transition: transform 0.5s ease;
+}
+
+.project-content {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .project-card:hover {
   transform: translateY(-5px);
   border-color: var(--primary-color);
   box-shadow: var(--shadow-lg);
+}
+
+.project-card:hover .project-image {
+  transform: scale(1.05);
 }
 
 .project-title {
@@ -318,7 +345,6 @@ section {
   color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 1.5rem;
-  flex-grow: 1;
 }
 
 .project-tags {
@@ -748,6 +774,31 @@ footer {
 .animate-on-scroll.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Responsive Projects Logic - Must be after base styles */
+
+/* Tablet and below: Initial override to hide/stack if needed */
+@media screen and (max-width: 64em) { /* 1024px */
+  .project-card {
+    grid-template-columns: 1fr;
+  }
+  .project-image-container {
+    display: none; /* Default for Tablet */
+  }
+}
+
+/* Mobile: Re-enable images as banners at the top */
+@media screen and (max-width: 48em) { /* 768px */
+  .project-image-container {
+    display: flex;
+    width: 100%;
+    min-width: 100%;
+    aspect-ratio: 16/9;
+    padding: 5%; /* Reduced padding for mobile */
+    border-right: none;
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
 }
 
 /* ── Responsive Nav ──────────────────────────── */
