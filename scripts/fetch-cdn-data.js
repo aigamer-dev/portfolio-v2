@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const DATA_DIR = path.join(__dirname, '../data');
 const FILES = [
@@ -11,32 +12,48 @@ const FILES = [
     'updates.json'
 ];
 
-// Cloudflare R2 API Configuration
-// We use the native Cloudflare API with the Bearer Token provided.
-const ACCOUNT_ID = (process.env.R2_ACCOUNT_ID || '0b42275f58d5069c075c26006bc9360a').trim();
-const BUCKET_NAME = (process.env.R2_BUCKET_NAME || 'portfolio-data').trim();
-const API_TOKEN = (process.env.R2_API_TOKEN || process.env.R2_ACCESS_KEY_ID || '').trim();
+// Cloudflare R2 / Custom Domain S3 Configuration
+const endpoint = "https://portfolio-data.aigamer.dev";
+const bucketName = "portfolio-data";
+
+const s3Client = new S3Client({
+    region: 'auto',
+    endpoint: endpoint,
+    forcePathStyle: true,
+    credentials: {
+        accessKeyId: (process.env.R2_ACCESS_KEY_ID || '0b42275f58d5069c075c26006bc9360a').trim(),
+        secretAccessKey: (process.env.R2_SECRET_ACCESS_KEY || 'a5eb7ece2c825aabe0a89b0a34982117fc46c0289a556d289298fe128c2716af').trim(),
+    },
+});
 
 async function downloadFile(filename) {
     const dest = path.join(DATA_DIR, filename);
-    const url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET_NAME}/objects/${filename}`;
 
     try {
-        console.log(`📡 Fetching ${filename} via R2 API...`);
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${API_TOKEN}`
-            }
+        console.log(`📡 Fetching ${filename} via S3 (Custom Domain)...`);
+        const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: filename,
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Status ${response.status}: ${errorText || response.statusText}`);
-        }
+        const response = await s3Client.send(command);
+        const stream = response.Body;
 
-        const buffer = await response.arrayBuffer();
-        fs.writeFileSync(dest, Buffer.from(buffer));
-        console.log(`✅ Downloaded ${filename}`);
+        return new Promise((resolve, reject) => {
+            const fileStream = fs.createWriteStream(dest);
+            stream.pipe(fileStream);
+
+            fileStream.on('finish', () => {
+                fileStream.close();
+                console.log(`✅ Downloaded ${filename}`);
+                resolve();
+            });
+
+            fileStream.on('error', (err) => {
+                fs.unlink(dest, () => { });
+                reject(err);
+            });
+        });
     } catch (err) {
         console.error(`❌ Error details for ${filename}:`, err.message);
         throw err;
@@ -44,18 +61,12 @@ async function downloadFile(filename) {
 }
 
 async function main() {
-    console.log(`🚀 Fetching data from Cloudflare R2 API...`);
-
-    if (!API_TOKEN) {
-        console.error('❌ R2 API Token missing in environment variables!');
-        process.exit(1);
-    }
+    console.log(`🚀 Fetching data from ${endpoint}...`);
 
     if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
     }
 
-    // Process files sequentially to avoid rate limiting and for cleaner logs
     for (const file of FILES) {
         try {
             await downloadFile(file);
