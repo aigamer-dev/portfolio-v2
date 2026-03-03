@@ -31,6 +31,7 @@ async function downloadFile(filename) {
     const dest = path.join(DATA_DIR, filename);
 
     try {
+        console.log(`📡 Fetching ${filename}...`);
         const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: filename,
@@ -55,6 +56,7 @@ async function downloadFile(filename) {
             });
         });
     } catch (err) {
+        console.error(`❌ Error details for ${filename}:`, err);
         throw new Error(`Failed to fetch ${filename}: ${err.message}`);
     }
 }
