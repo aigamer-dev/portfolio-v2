@@ -21,7 +21,12 @@ async function downloadFile(filename) {
     const dest = path.join(DATA_DIR, filename);
 
     return new Promise((resolve, reject) => {
-        https.get(url, (res) => {
+        const options = {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        };
+        https.get(url, options, (res) => {
             if (res.statusCode !== 200) {
                 reject(new Error(`Failed to fetch ${filename}: Status ${res.statusCode}`));
                 return;
