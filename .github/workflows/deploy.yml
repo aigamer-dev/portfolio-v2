@@ -40,8 +40,8 @@ jobs:
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
           REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
-          R2_API_TOKEN: ${{ secrets.R2_API_TOKEN }}
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET_NAME: "portfolio-data"
           R2_DATA_URL: "https://portfolio-data.aigamer.dev"
 
