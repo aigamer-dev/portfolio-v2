@@ -14,15 +14,16 @@ const FILES = [
 
 // Cloudflare R2 Configuration
 // All configuration should be provided via environment variables for security.
-const endpoint = process.env.R2_ENDPOINT;
-const bucketName = process.env.R2_BUCKET_NAME || 'portfolio-data';
+const endpoint = (process.env.R2_ENDPOINT || '').trim();
+const bucketName = (process.env.R2_BUCKET_NAME || 'portfolio-data').trim();
 
 const s3Client = new S3Client({
     region: 'auto',
     endpoint: endpoint,
+    forcePathStyle: true, // Often required for R2 compatibility with certain SDK versions/endpoints
     credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+        accessKeyId: (process.env.R2_ACCESS_KEY_ID || '').trim(),
+        secretAccessKey: (process.env.R2_SECRET_ACCESS_KEY || '').trim(),
     },
 });
 
