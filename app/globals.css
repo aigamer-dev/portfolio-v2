@@ -416,6 +416,11 @@ section {
   align-items: flex-start;
   margin-bottom: 1rem;
   width: 100%;
+  background: transparent !important;
+}
+
+.exp-info {
+  background: transparent !important;
 }
 
 .exp-role {
@@ -430,6 +435,11 @@ section {
   align-items: center;
   gap: 0.4rem;
   font-size: 1.1rem;
+}
+
+.exp-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .exp-at {
