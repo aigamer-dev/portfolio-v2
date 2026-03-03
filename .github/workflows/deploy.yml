@@ -38,12 +38,12 @@ jobs:
       - name: Reconstruct Private Data
         run: |
           mkdir -p data
-          echo "${{ secrets.DATA_AWARDS_B64 }}" | base64 -d > data/awards.json
-          echo "${{ secrets.DATA_EXPERIENCE_B64 }}" | base64 -d > data/experience.json
-          echo "${{ secrets.DATA_PROFILE_INFO_B64 }}" | base64 -d > data/profile_info.json
-          echo "${{ secrets.DATA_PROJECTS_B64 }}" | base64 -d > data/projects.json
-          echo "${{ secrets.DATA_SKILLS_B64 }}" | base64 -d > data/skills.json
-          echo "${{ secrets.DATA_UPDATES_B64 }}" | base64 -d > data/updates.json
+          [ -f data/awards.b64 ] && base64 -d data/awards.b64 > data/awards.json
+          [ -f data/experience.b64 ] && base64 -d data/experience.b64 > data/experience.json
+          [ -f data/profile_info.b64 ] && base64 -d data/profile_info.b64 > data/profile_info.json
+          [ -f data/projects.b64 ] && base64 -d data/projects.b64 > data/projects.json
+          [ -f data/skills.b64 ] && base64 -d data/skills.b64 > data/skills.json
+          [ -f data/updates.b64 ] && base64 -d data/updates.b64 > data/updates.json
           echo "✅ Private data reconstructed successfully"
 
       - name: Build
