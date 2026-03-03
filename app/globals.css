@@ -100,6 +100,11 @@ img, video, canvas, svg {
 }
 
 /* Header & Nav */
+.section-header {
+  margin-bottom: clamp(1rem, 3vh, 2rem);
+  position: relative;
+  z-index: 10;
+}
 header {
   position: sticky;
   top: 0;
@@ -373,8 +378,8 @@ section {
   display: flex;
   gap: 1.5rem;
   padding: 2rem !important;
-  background: var(--surface-color);
-  border: var(--border-width) solid var(--border-color);
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: var(--transition);
@@ -382,7 +387,8 @@ section {
 
 .experience-card:hover {
   border-color: var(--primary-color);
-  transform: translateX(5px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .exp-visual-accent {

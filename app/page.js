@@ -64,10 +64,10 @@ export default function Home() {
 
       {/* Experience Section */}
       <section id="experience" className="container">
-        <header className="section-header animate-on-scroll">
+        <div className="section-header animate-on-scroll">
           <h2 className="section-title">Experience</h2>
           <p className="section-subtitle">My professional journey building robust backend systems.</p>
-        </header>
+        </div>
 
         <div className="experience-list">
           {[...experienceData.experience].sort((a, b) => (b.order ?? 0) - (a.order ?? 0)).map((exp, index) => (
