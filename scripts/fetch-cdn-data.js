@@ -17,10 +17,15 @@ const FILES = [
 const endpoint = (process.env.R2_ENDPOINT || '').trim();
 const bucketName = (process.env.R2_BUCKET_NAME || 'portfolio-data').trim();
 
+console.log(`📍 Endpoint: ${endpoint}`);
+console.log(`📦 Bucket: ${bucketName}`);
+console.log(`🔑 Access Key ID length: ${process.env.R2_ACCESS_KEY_ID?.length || 0}`);
+console.log(`🔑 Access Key ID prefix: ${process.env.R2_ACCESS_KEY_ID?.substring(0, 4)}...`);
+
 const s3Client = new S3Client({
     region: 'auto',
     endpoint: endpoint,
-    forcePathStyle: true, // Often required for R2 compatibility with certain SDK versions/endpoints
+    forcePathStyle: false, // Toggling to false (Virtual-hosted style) for R2
     credentials: {
         accessKeyId: (process.env.R2_ACCESS_KEY_ID || '').trim(),
         secretAccessKey: (process.env.R2_SECRET_ACCESS_KEY || '').trim(),
