@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const DATA_DIR = path.join(__dirname, '../data');
 const FILES = [
@@ -12,28 +12,35 @@ const FILES = [
     'updates.json'
 ];
 
-// In a real private scenario, you would use @aws-sdk/client-s3 with your keys.
-// For now, we fetch from the provided custom domain as the user indicated it's available.
-const BASE_URL = process.env.R2_DATA_URL || 'https://portfolio-data.aigamer.dev';
+// Cloudflare R2 Configuration
+// All configuration should be provided via environment variables for security.
+const endpoint = process.env.R2_ENDPOINT;
+const bucketName = process.env.R2_BUCKET_NAME || 'portfolio-data';
+
+const s3Client = new S3Client({
+    region: 'auto',
+    endpoint: endpoint,
+    credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+});
 
 async function downloadFile(filename) {
-    const url = `${BASE_URL}/${filename}`;
     const dest = path.join(DATA_DIR, filename);
 
-    return new Promise((resolve, reject) => {
-        const options = {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        };
-        https.get(url, options, (res) => {
-            if (res.statusCode !== 200) {
-                reject(new Error(`Failed to fetch ${filename}: Status ${res.statusCode}`));
-                return;
-            }
+    try {
+        const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: filename,
+        });
 
+        const response = await s3Client.send(command);
+        const stream = response.Body;
+
+        return new Promise((resolve, reject) => {
             const fileStream = fs.createWriteStream(dest);
-            res.pipe(fileStream);
+            stream.pipe(fileStream);
 
             fileStream.on('finish', () => {
                 fileStream.close();
@@ -45,14 +52,19 @@ async function downloadFile(filename) {
                 fs.unlink(dest, () => { });
                 reject(err);
             });
-        }).on('error', (err) => {
-            reject(err);
         });
-    });
+    } catch (err) {
+        throw new Error(`Failed to fetch ${filename}: ${err.message}`);
+    }
 }
 
 async function main() {
-    console.log(`🚀 Fetching data from ${BASE_URL}...`);
+    console.log(`🚀 Fetching data from Cloudflare R2 (Authenticated)...`);
+
+    if (!process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
+        console.error('❌ R2 Credentials missing in environment variables!');
+        process.exit(1);
+    }
 
     if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
