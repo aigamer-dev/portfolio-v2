@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const DATA_DIR = path.join(__dirname, '../data');
 const FILES = [
@@ -12,65 +11,43 @@ const FILES = [
     'updates.json'
 ];
 
-// Cloudflare R2 Configuration
-// All configuration should be provided via environment variables for security.
-const endpoint = (process.env.R2_ENDPOINT || '').trim();
-const bucketName = (process.env.R2_BUCKET_NAME || 'portfolio-data').trim();
-
-console.log(`📍 Endpoint: ${endpoint}`);
-console.log(`📦 Bucket: ${bucketName}`);
-console.log(`🔑 Access Key ID length: ${process.env.R2_ACCESS_KEY_ID?.length || 0}`);
-console.log(`🔑 Access Key ID prefix: ${process.env.R2_ACCESS_KEY_ID?.substring(0, 4)}...`);
-
-const s3Client = new S3Client({
-    region: 'auto',
-    endpoint: endpoint,
-    forcePathStyle: false, // Toggling to false (Virtual-hosted style) for R2
-    credentials: {
-        accessKeyId: (process.env.R2_ACCESS_KEY_ID || '').trim(),
-        secretAccessKey: (process.env.R2_SECRET_ACCESS_KEY || '').trim(),
-    },
-});
+// Cloudflare R2 API Configuration
+// We use the native Cloudflare API with the Bearer Token provided.
+const ACCOUNT_ID = (process.env.R2_ACCOUNT_ID || '0b42275f58d5069c075c26006bc9360a').trim();
+const BUCKET_NAME = (process.env.R2_BUCKET_NAME || 'portfolio-data').trim();
+const API_TOKEN = (process.env.R2_API_TOKEN || process.env.R2_ACCESS_KEY_ID || '').trim();
 
 async function downloadFile(filename) {
     const dest = path.join(DATA_DIR, filename);
+    const url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET_NAME}/objects/${filename}`;
 
     try {
-        console.log(`📡 Fetching ${filename}...`);
-        const command = new GetObjectCommand({
-            Bucket: bucketName,
-            Key: filename,
+        console.log(`📡 Fetching ${filename} via R2 API...`);
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${API_TOKEN}`
+            }
         });
 
-        const response = await s3Client.send(command);
-        const stream = response.Body;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Status ${response.status}: ${errorText || response.statusText}`);
+        }
 
-        return new Promise((resolve, reject) => {
-            const fileStream = fs.createWriteStream(dest);
-            stream.pipe(fileStream);
-
-            fileStream.on('finish', () => {
-                fileStream.close();
-                console.log(`✅ Downloaded ${filename}`);
-                resolve();
-            });
-
-            fileStream.on('error', (err) => {
-                fs.unlink(dest, () => { });
-                reject(err);
-            });
-        });
+        const buffer = await response.arrayBuffer();
+        fs.writeFileSync(dest, Buffer.from(buffer));
+        console.log(`✅ Downloaded ${filename}`);
     } catch (err) {
-        console.error(`❌ Error details for ${filename}:`, err);
-        throw new Error(`Failed to fetch ${filename}: ${err.message}`);
+        console.error(`❌ Error details for ${filename}:`, err.message);
+        throw err;
     }
 }
 
 async function main() {
-    console.log(`🚀 Fetching data from Cloudflare R2 (Authenticated)...`);
+    console.log(`🚀 Fetching data from Cloudflare R2 API...`);
 
-    if (!process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
-        console.error('❌ R2 Credentials missing in environment variables!');
+    if (!API_TOKEN) {
+        console.error('❌ R2 API Token missing in environment variables!');
         process.exit(1);
     }
 
@@ -78,15 +55,17 @@ async function main() {
         fs.mkdirSync(DATA_DIR, { recursive: true });
     }
 
-    const tasks = FILES.map(file => downloadFile(file));
-
-    try {
-        await Promise.all(tasks);
-        console.log('✨ All data files synchronized!');
-    } catch (error) {
-        console.error('❌ Data sync failed:', error.message);
-        process.exit(1);
+    // Process files sequentially to avoid rate limiting and for cleaner logs
+    for (const file of FILES) {
+        try {
+            await downloadFile(file);
+        } catch (error) {
+            console.error(`❌ Data sync failed for ${file}`);
+            process.exit(1);
+        }
     }
+
+    console.log('✨ All data files synchronized!');
 }
 
 main();
