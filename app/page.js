@@ -123,7 +123,10 @@ export default function Home() {
                       <img
                         src={skill.icon_url}
                         alt={skill.name}
+                        width={24}
+                        height={24}
                         className={`skill-icon ${skill.invert ? 'invert-on-dark' : ''}`}
+                        loading="lazy"
                       />
                       <span className="skill-name">{skill.name}</span>
                     </div>

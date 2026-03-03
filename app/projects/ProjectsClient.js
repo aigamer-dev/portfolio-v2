@@ -12,7 +12,14 @@ export default function ProjectsClient({ projects }) {
                     <article key={index} id={project.slug} className="project-card card animate-on-scroll">
                         {project.cover_image && (
                             <div className="project-image-container">
-                                <img src={project.cover_image} alt={`${project.title} screenshot`} className="project-image" />
+                                <img
+                                    src={project.cover_image}
+                                    alt={`${project.title} screenshot`}
+                                    className="project-image"
+                                    width={400}
+                                    height={400}
+                                    loading="lazy"
+                                />
                             </div>
                         )}
                         <div className="project-content">

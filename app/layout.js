@@ -6,6 +6,8 @@ import DotMatrixBackground from "@/components/DotMatrixBackground";
 
 const inter = Inter({
   subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-inter',
 });
 
 export const metadata = {
@@ -102,6 +104,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" as="style" />
         <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
         <script
           type="application/ld+json"
