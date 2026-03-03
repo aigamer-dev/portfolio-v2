@@ -1,41 +1,22 @@
 {
-  "name": "frontend",
+  "name": "react-site",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
-  "proxy": "https://api.aigamer.dev",
-  "dependencies": {
-    "framer-motion": "^12.23.6",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0",
-    "react-scripts": "5.0.1"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "fetch-data": "node scripts/fetch-cdn-data.js",
+    "build": "npm run fetch-data && next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.1.6"
   },
   "devDependencies": {
-    "eslint-config-react-app": "^7.0.1"
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "@eslint/eslintrc": "^3"
   }
 }
