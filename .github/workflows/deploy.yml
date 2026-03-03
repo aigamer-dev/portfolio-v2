@@ -35,8 +35,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Fetch Private Data
-        run: chmod +x scripts/fetch-data.sh && ./scripts/fetch-data.sh
+      - name: Reconstruct Private Data
+        run: |
+          mkdir -p data
+          echo "${{ secrets.DATA_AWARDS_B64 }}" | base64 -d > data/awards.json
+          echo "${{ secrets.DATA_EXPERIENCE_B64 }}" | base64 -d > data/experience.json
+          echo "${{ secrets.DATA_PROFILE_INFO_B64 }}" | base64 -d > data/profile_info.json
+          echo "${{ secrets.DATA_PROJECTS_B64 }}" | base64 -d > data/projects.json
+          echo "${{ secrets.DATA_SKILLS_B64 }}" | base64 -d > data/skills.json
+          echo "${{ secrets.DATA_UPDATES_B64 }}" | base64 -d > data/updates.json
+          echo "✅ Private data reconstructed successfully"
 
       - name: Build
         run: npm run build
