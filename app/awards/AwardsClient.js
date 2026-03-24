@@ -19,7 +19,10 @@ export default function AwardsClient({ awards }) {
                 {[...awards].sort((a, b) => (b.order ?? 0) - (a.order ?? 0)).map((award, index) => (
                     <article key={index} id={award.slug} className="card award-card animate-on-scroll">
                         <div className="award-header">
-                            <span className="award-type">{award.type}</span>
+                            <div className="award-badges">
+                                {award.achievement && <span className="award-achievement">{award.achievement}</span>}
+                                <span className="award-type">{award.type}</span>
+                            </div>
                             <span className="award-date">{mounted ? award.date : '...'}</span>
                         </div>
                         <h3 className="award-title">{award.title}</h3>

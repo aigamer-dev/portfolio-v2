@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import useScrollReveal from '@/hooks/useScrollReveal';
+import { parseContent } from '@/lib/parseContent';
 import profileData from '@/data/profile_info.json';
 import experienceData from '@/data/experience.json';
 import skillsData from '@/data/skills.json';
@@ -91,7 +92,7 @@ export default function Home() {
                     <span className="exp-location"><i className="ri-map-pin-line"></i> {exp.location}</span>
                   </div>
                 </header>
-                <p className="exp-description">{exp.description}</p>
+                <div className="exp-description">{parseContent(exp.description)}</div>
                 <div className="exp-tags">
                   {exp.tech_stack_names.map((tech, tIndex) => (
                     <span key={tIndex} className="tag">{tech}</span>
@@ -109,25 +110,27 @@ export default function Home() {
         <p className="section-subtitle animate-on-scroll">Technologies and tools I work with daily.</p>
 
         <div className="skills-container">
-          {/* Categorized Skills */}
-          {["BE", "FE", "DO", "AI"].map((catId) => {
-            const catNames = { BE: "Backend & APIs", FE: "Frontend", DO: "DevOps & Cloud", AI: "AI & ML" };
-            const catSkills = skillsData.skills.filter(s => s.category === catId);
+          {skillsData.categories
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((category) => {
+              const catSkills = skillsData.skills.filter(s => s.category === category.id);
 
-            return (
-              <div key={catId} className="skills-category animate-on-scroll">
-                <h3 className="skills-category-title">{catNames[catId]}</h3>
+              return (
+                <div key={category.id} className="skills-category animate-on-scroll">
+                  <h3 className="skills-category-title">{category.name}</h3>
                 <div className="skills-grid">
                   {catSkills.map((skill, sIndex) => (
                     <div key={sIndex} className="skill-item">
-                      <img
-                        src={skill.icon_url}
-                        alt={skill.name}
-                        width={24}
-                        height={24}
-                        className={`skill-icon ${skill.invert ? 'invert-on-dark' : ''}`}
-                        loading="lazy"
-                      />
+                      {skill.icon_url && (
+                        <img
+                          src={skill.icon_url}
+                          alt={skill.name}
+                          width={24}
+                          height={24}
+                          className={`skill-icon ${skill.invert ? 'invert-on-dark' : ''}`}
+                          loading="lazy"
+                        />
+                      )}
                       <span className="skill-name">{skill.name}</span>
                     </div>
                   ))}
